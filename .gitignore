@@ -1,5 +1,6 @@
 *.pth
 *.zip
+*.pyc
 pretrained_models/*
 src/convert_model.py
 src/convert_model2.py
