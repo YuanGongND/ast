@@ -12,12 +12,12 @@
  ## Introduction  
   This repository contains the official implementation (in PyTorch) of **Audio Spectrogram Transformer (AST)** proposed in the Interspeech 2021 paper [AST: Audio Spectrogram Transformer](https://arxiv.org/abs/2104.01778) (Yuan Gong, Yu-An Chung, James Glass).  
   
-AST is the first *convolution-free, purely* attention-based model for audio classification which supports variable length input and can be applied to various tasks. We evaluate AST on various audio classification benchmarks, where it achieves new state-of-the-art results of 0.485 mAP on AudioSet, 95.6% accuracy on ESC-50, and 98.1% accuracy on Speech Commands V2.  For details, please refer to the paper and the [ISCA SIGML talk](https://www.youtube.com/watch?v=CSRDbqGY0Vw).  
+AST is the first **convolution-free, purely** attention-based model for audio classification which supports variable length input and can be applied to various tasks. We evaluate AST on various audio classification benchmarks, where it achieves new state-of-the-art results of 0.485 mAP on AudioSet, 95.6% accuracy on ESC-50, and 98.1% accuracy on Speech Commands V2.  For details, please refer to the paper and the [ISCA SIGML talk](https://www.youtube.com/watch?v=CSRDbqGY0Vw).  
   
 Please have a try! AST can be used with a few lines of code, and we also provide recipes to reproduce the SOTA results on AudioSet, ESC-50, and Speechcommands by almost one click.  
   
 ## Citing  
-Please cite our paper(s) if you find this repository useful. The first paper proposes the Audio Spectrogram Transformer while the second paper decribes the training pipeline that  we apploed on AST to achieve the new state-of-the-art on AudioSet.   
+Please cite our paper(s) if you find this repository useful. The first paper proposes the Audio Spectrogram Transformer while the second paper decribes the training pipeline that we applied on AST to achieve the new state-of-the-art on AudioSet.   
 ```  
 @article{gong2021ast,  
  title={Ast: Audio spectrogram transformer}, 
@@ -35,7 +35,8 @@ Please cite our paper(s) if you find this repository useful. The first paper pro
   
 ## Geting Started  
 
-**Step 1. Clone this repository and set as working directory, create virtual environment and install the dependencies.**\  
+Step 1. Clone this repository and set as working directory, create virtual environment and install the dependencies.
+
 ```
 cd ast/ 
 python3 -m venv venvast
@@ -43,8 +44,9 @@ source venvast/bin/activate
 pip install -r requirements.txt 
 ```
   
-**Step 2. Test the AST model.**\
- `ASTModel(label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=True, audioset_pretrain=False, model_size='base384')`  
+Step 2. Test the AST model.
+
+`ASTModel(label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=True, audioset_pretrain=False, model_size='base384')`  
 **Parameters:**\
 `label_dim` : The number of classes.\
 `fstride`:  The stride of patch spliting on the frequency dimension, for 16\*16 patchs, fstride=16 means no overlap, fstride=10 means overlap of 6 (used in the paper).\
