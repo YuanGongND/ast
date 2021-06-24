@@ -46,7 +46,9 @@ pip install -r requirements.txt
   
 Step 2. Test the AST model.
 
-`ASTModel(label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=True, audioset_pretrain=False, model_size='base384')`  
+```python
+ASTModel(label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=True, audioset_pretrain=False, model_size='base384')
+```  
 
 **Parameters:**\
 `label_dim` : The number of classes.\
