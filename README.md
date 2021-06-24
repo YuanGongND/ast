@@ -20,11 +20,17 @@ Please have a try! AST can be used with a few lines of code, and we also provide
 Please cite our paper(s) if you find this repository useful. The first paper proposes the Audio Spectrogram Transformer while the second paper decribes the training pipeline that  we apploed on AST to achieve the new state-of-the-art on AudioSet.   
 ```  
 @article{gong2021ast,  
- title={Ast: Audio spectrogram transformer}, author={Gong, Yuan and Chung, Yu-An and Glass, James}, journal={arXiv preprint arXiv:2104.01778}, year={2021}}  
+ title={Ast: Audio spectrogram transformer}, 
+ author={Gong, Yuan and Chung, Yu-An and Glass, James}, 
+ journal={arXiv preprint arXiv:2104.01778}, 
+ year={2021}}  
 ```  
 ```  
 @article{gong2021psla,  
- title={PSLA: Improving Audio Tagging with Pretraining, Sampling, Labeling, and Aggregation}, author={Gong, Yuan and Chung, Yu-An and Glass, James}, journal={arXiv preprint arXiv:2102.01243}, year={2021}}  
+ title={PSLA: Improving Audio Tagging with Pretraining, Sampling, Labeling, and Aggregation}, 
+ author={Gong, Yuan and Chung, Yu-An and Glass, James}, 
+ journal={arXiv preprint arXiv:2102.01243}, 
+ year={2021}}  
 ```  
   
 ## Geting Started  
@@ -47,7 +53,11 @@ pip install -r requirements.txt
 `input_tdim`: The number of time frames of the input spectrogram.\
 `imagenet_pretrain`: If `True`, use ImageNet pretrained model.\
 `audioset_pretrain`: If`True`,  use full AudioSet And ImageNet pretrained model. Currently only support `base384` model with `fstride=tstride=10`.\
+<<<<<<< HEAD
 `model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]`
+=======
+`model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]`\
+>>>>>>> 072fa0e54af20e8b5d08cda08b1a82ecd5717854
 
 ``` 
 cd ast/src
@@ -136,4 +146,8 @@ Ensemble model 2-4 achieves `0.475 mAP`, Ensemble model 2-7 achieves and `0.485 
 If you want to finetune AudioSet-pretrained AST model on your task, you can also set the `audioset_pretrain=True` when you create the AST model, it will automatically load model 1 (`0.459 mAP`). In our ESC-50 recipe, AudioSet pretraining is used.
 
  ## Contact
+<<<<<<< HEAD
 If you have a question, please bring up an issue (preferred) or send me an email yuangong@mit.edu.
+=======
+If you have a question, please bring up an issue (preferred) or send me an email yuangong@mit.edu.
+>>>>>>> 072fa0e54af20e8b5d08cda08b1a82ecd5717854
