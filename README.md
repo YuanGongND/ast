@@ -58,11 +58,7 @@ ASTModel(label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024,
 `input_tdim`: The number of time frames of the input spectrogram.\
 `imagenet_pretrain`: If `True`, use ImageNet pretrained model.\
 `audioset_pretrain`: If`True`,  use full AudioSet And ImageNet pretrained model. Currently only support `base384` model with `fstride=tstride=10`.\
-<<<<<<< HEAD
 `model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]`
-=======
-`model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]`\
->>>>>>> 072fa0e54af20e8b5d08cda08b1a82ecd5717854
 
 ``` 
 cd ast/src
