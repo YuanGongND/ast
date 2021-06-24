@@ -2,12 +2,12 @@
 # AST: Audio Spectrogram Transformer  
  - [Introduction](#Introduction)
  - [Citing](#Citing)  
- - [Getting Started](#Geting Started)
+ - [Getting Started](#Getting Started)
  - [ESC-50 Recipe](#ESC-50 Recipe)  
- - [Speechcommands Recipe](#Speechcommands Recipe)  
- - [AudioSet Recipe](#AudioSet Recipe)
+ - [Speechcommands Recipe](#Speechcommands V2 Recipe)  
+ - [AudioSet Recipe](#Audioset Recipe)
  - [Pretrained Models](#Pretrained Models)
- - [Contact](#Pretrained Models)
+ - [Contact](#Contact)
 
  ## Introduction  
   This repository contains the official implementation (in PyTorch) of the **Audio Spectrogram Transformer (AST)** proposed in the Interspeech 2021 paper [AST: Audio Spectrogram Transformer](https://arxiv.org/abs/2104.01778) (Yuan Gong, Yu-An Chung, James Glass).  
@@ -33,7 +33,7 @@ Please cite our paper(s) if you find this repository useful. The first paper pro
  year={2021}}  
 ```  
   
-## Geting Started  
+## Getting Started  
 
 Step 1. Clone this repository and set it as the working directory, create a virtual environment and install the dependencies.
 
