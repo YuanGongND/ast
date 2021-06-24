@@ -19,6 +19,8 @@ import numpy as np
 from scipy import stats
 import torch
 
+eval_data_path = '/data/sls/scratch/yuangong/audioset/datafiles/eval_data.json'
+
 def get_ensemble_res(mdl_list, base_path):
     # the 0-len(mdl_list) rows record the results of single models, the last row record the result of the ensemble model.
     ensemble_res = np.zeros([len(mdl_list)+1, 3])
@@ -79,7 +81,7 @@ def d_prime(auc):
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 args = parser.parse_args()
 args.dataset='audioset'
-args.data_eval='/data/sls/scratch/yuangong/audioset/datafiles/eval_data.json'
+args.data_eval= eval_data_path
 args.label_csv='/data/sls/scratch/yuangong/ast/egs/audioset/class_labels_indices.csv'
 args.loss_fn = torch.nn.BCEWithLogitsLoss()
 norm_stats = {'audioset': [-4.2677393, 4.5689974], 'esc50': [-6.6268077, 5.358466],
@@ -107,6 +109,6 @@ mdl_list_m = ['/data/sls/scratch/yuangong/ast/pretrained_models/ensemble/audiose
 '/data/sls/scratch/yuangong/ast/pretrained_models/ensemble/audioset_16_16_0.4422.pth']
 
 # ensemble 3 models that is trained with same setting, but different random seeds
-#get_ensemble_res(mdl_list_s, './exp/ensemble_s')
+get_ensemble_res(mdl_list_s, './exp/ensemble_s')
 # ensemble 6 models that is trained with different settings (3 with stride of 10, others are with stride of 12, 14, and 16)
 get_ensemble_res(mdl_list_m, './exp/ensemble_m')
