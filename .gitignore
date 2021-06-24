@@ -1,7 +1,8 @@
 *.pth
 *.zip
 *.pyc
-pretrained_models/*
+pretrained_models/ensemble/*
+pretrained_models/legal_pretrained_mdl/*
 src/convert_model.py
 src/convert_model2.py
 egs/speechcommands/gen_weight_file_sc.py
