@@ -2,11 +2,11 @@
 # AST: Audio Spectrogram Transformer  
  - [Introduction](#Introduction)
  - [Citing](#Citing)  
- - [Getting Started](#Getting Started)
- - [ESC-50 Recipe](#ESC-50 Recipe)  
- - [Speechcommands Recipe](#Speechcommands V2 Recipe)  
- - [AudioSet Recipe](#Audioset Recipe)
- - [Pretrained Models](#Pretrained Models)
+ - [Getting Started](#Getting-Started)
+ - [ESC-50 Recipe](#ESC-50-Recipe)  
+ - [Speechcommands Recipe](#Speechcommands-V2-Recipe)  
+ - [AudioSet Recipe](#Audioset-Recipe)
+ - [Pretrained Models](#Pretrained-Models)
  - [Contact](#Contact)
 
  ## Introduction  
