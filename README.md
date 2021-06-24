@@ -47,7 +47,7 @@ pip install -r requirements.txt
 `input_tdim`: The number of time frames of the input spectrogram.\
 `imagenet_pretrain`: If `True`, use ImageNet pretrained model.\
 `audioset_pretrain`: If`True`,  use full AudioSet And ImageNet pretrained model. Currently only support `base384` model with `fstride=tstride=10`.\
-`model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]`\
+`model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]`
 
 ``` 
 cd ast/src
