@@ -10,14 +10,14 @@
  - Contact
 
  ## Introduction  
-  This repository contains the official implementation (in PyTorch) of **Audio Spectrogram Transformer (AST)** proposed in the Interspeech 2021 paper [AST: Audio Spectrogram Transformer](https://arxiv.org/abs/2104.01778) (Yuan Gong, Yu-An Chung, James Glass).  
+  This repository contains the official implementation (in PyTorch) of the **Audio Spectrogram Transformer (AST)** proposed in the Interspeech 2021 paper [AST: Audio Spectrogram Transformer](https://arxiv.org/abs/2104.01778) (Yuan Gong, Yu-An Chung, James Glass).  
   
 AST is the first **convolution-free, purely** attention-based model for audio classification which supports variable length input and can be applied to various tasks. We evaluate AST on various audio classification benchmarks, where it achieves new state-of-the-art results of 0.485 mAP on AudioSet, 95.6% accuracy on ESC-50, and 98.1% accuracy on Speech Commands V2.  For details, please refer to the paper and the [ISCA SIGML talk](https://www.youtube.com/watch?v=CSRDbqGY0Vw).  
   
-Please have a try! AST can be used with a few lines of code, and we also provide recipes to reproduce the SOTA results on AudioSet, ESC-50, and Speechcommands by almost one click.  
+Please have a try! AST can be used with a few lines of code, and we also provide recipes to reproduce the SOTA results on AudioSet, ESC-50, and Speechcommands with almost one click.  
   
 ## Citing  
-Please cite our paper(s) if you find this repository useful. The first paper proposes the Audio Spectrogram Transformer while the second paper decribes the training pipeline that we applied on AST to achieve the new state-of-the-art on AudioSet.   
+Please cite our paper(s) if you find this repository useful. The first paper proposes the Audio Spectrogram Transformer while the second paper describes the training pipeline that we applied on AST to achieve the new state-of-the-art on AudioSet.   
 ```  
 @article{gong2021ast,  
  title={Ast: Audio spectrogram transformer}, 
@@ -35,7 +35,7 @@ Please cite our paper(s) if you find this repository useful. The first paper pro
   
 ## Geting Started  
 
-Step 1. Clone this repository and set as working directory, create virtual environment and install the dependencies.
+Step 1. Clone this repository and set it as the working directory, create a virtual environment and install the dependencies.
 
 ```
 cd ast/ 
@@ -136,7 +136,7 @@ The result of each epoch is saved in `ast/egs/audioset/exp/yourexpname/result.cs
 
 In order to reproduce ensembe results of `0.475 mAP` and `0.485 mAP`, please train 3 models use the same setting (i.e., repeat above three times) and train 6 models with different `tstride` and `fstride`, and average the output of the models. Please refer to `ast/egs/audioset/ensemble.py`.
 
-##Pretrained Models
+## Pretrained Models
 We provide full AudioSet pretrained models.
 1. Full AudioSet, 10 tstride, 10 fstride, with Weight Averaging (0.459 mAP)
 2. Full AudioSet, 10 tstride, 10 fstride, without Weight Averaging, Model 1 (0.450 mAP)

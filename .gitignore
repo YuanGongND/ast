@@ -1,6 +1,7 @@
 *.pth
 *.zip
 *.pyc
+*.DS_Store
 pretrained_models/ensemble/*
 pretrained_models/legal_pretrained_mdl/*
 src/convert_model.py
