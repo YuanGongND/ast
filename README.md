@@ -151,8 +151,5 @@ Ensemble model 2-4 achieves `0.475 mAP`, Ensemble model 2-7 achieves and `0.485 
 If you want to finetune AudioSet-pretrained AST model on your task, you can also set the `audioset_pretrain=True` when you create the AST model, it will automatically load model 1 (`0.459 mAP`). In our ESC-50 recipe, AudioSet pretraining is used.
 
  ## Contact
-<<<<<<< HEAD
 If you have a question, please bring up an issue (preferred) or send me an email yuangong@mit.edu.
-=======
-If you have a question, please bring up an issue (preferred) or send me an email yuangong@mit.edu.
->>>>>>> 072fa0e54af20e8b5d08cda08b1a82ecd5717854
+
