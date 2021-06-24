@@ -25,6 +25,7 @@ print("I am process %s, running on %s: starting (%s)" % (os.getpid(), os.uname()
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--data-train", type=str, default='', help="training data json")
 parser.add_argument("--data-val", type=str, default='', help="validation data json")
+parser.add_argument("--data-eval", type=str, default='', help="evaluation data json")
 parser.add_argument("--label-csv", type=str, default='', help="csv with class labels")
 parser.add_argument("--n_class", type=int, default=527, help="number of classes")
 parser.add_argument("--model", type=str, default='ast', help="the model used")
@@ -49,17 +50,23 @@ parser.add_argument("--bal", type=str, default=None, help="use balanced sampling
 # the stride used in patch spliting, e.g., for patch size 16*16, a stride of 16 means no overlapping, a stride of 10 means overlap of 6.
 parser.add_argument("--fstride", type=int, default=10, help="soft split freq stride, overlap=patch_size-stride")
 parser.add_argument("--tstride", type=int, default=10, help="soft split time stride, overlap=patch_size-stride")
-parser.add_argument('--astpretrain', help='if use ImageNet pretrained audio spectrogram transformer model', type=ast.literal_eval, default='False')
+parser.add_argument('--imagenet_pretrain', help='if use ImageNet pretrained audio spectrogram transformer model', type=ast.literal_eval, default='True')
+parser.add_argument('--audioset_pretrain', help='if use ImageNet and audioset pretrained audio spectrogram transformer model', type=ast.literal_eval, default='False')
 
 args = parser.parse_args()
 
 # transformer based model
 if args.model == 'ast':
     print('now train a audio spectrogram transformer model')
+    # dataset spectrogram mean and std, used to normalize the input
+    norm_stats = {'audioset':[-4.2677393, 4.5689974], 'esc50':[-6.6268077, 5.358466], 'speechcommands':[-6.845978, 5.5654526]}
     target_length = {'audioset':1024, 'esc50':512, 'speechcommands':128}
+    # if add noise for data augmentation, only use for speech commands
+    noise = {'audioset': False, 'esc50': False, 'speechcommands':True}
 
-    audio_conf = {'num_mel_bins': 128, 'target_length': target_length[args.dataset], 'freqm': args.freqm, 'timem': args.timem, 'mixup': args.mixup, 'dataset': args.dataset, 'mode':'train'}
-    val_audio_conf = {'num_mel_bins': 128, 'target_length': target_length[args.dataset], 'freqm': 0, 'timem': 0, 'mixup': 0, 'dataset': args.dataset, 'mode':'evaluation'}
+    audio_conf = {'num_mel_bins': 128, 'target_length': target_length[args.dataset], 'freqm': args.freqm, 'timem': args.timem, 'mixup': args.mixup, 'dataset': args.dataset, 'mode':'train', 'mean':norm_stats[args.dataset][0], 'std':norm_stats[args.dataset][1],
+                  'noise':noise[args.dataset]}
+    val_audio_conf = {'num_mel_bins': 128, 'target_length': target_length[args.dataset], 'freqm': 0, 'timem': 0, 'mixup': 0, 'dataset': args.dataset, 'mode':'evaluation', 'mean':norm_stats[args.dataset][0], 'std':norm_stats[args.dataset][1], 'noise':False}
 
     if args.bal == 'bal':
         print('balanced sampler is being used')
@@ -79,18 +86,41 @@ if args.model == 'ast':
         dataloader.AudiosetDataset(args.data_val, label_csv=args.label_csv, audio_conf=val_audio_conf),
         batch_size=args.batch_size*2, shuffle=False, num_workers=args.num_workers, pin_memory=True)
 
-    audio_model = models.ASTModel(label_dim=args.n_class, fstride=args.fstride, tstride=args.tstride, input_fdim=128, input_tdim=target_length[args.dataset], pretrain=args.astpretrain, model_size='base384')
+    audio_model = models.ASTModel(label_dim=args.n_class, fstride=args.fstride, tstride=args.tstride, input_fdim=128, input_tdim=target_length[args.dataset], imagenet_pretrain=args.imagenet_pretrain, audioset_pretrain=args.audioset_pretrain,model_size='base384')
 
-if not bool(args.exp_dir):
-    print("exp_dir not specified, automatically naming one...")
-    args.exp_dir = "exp/Data-%s/AudioModel-%s_Optim-%s_LR-%s_Epochs-%s" % (
-        os.path.basename(args.data_train), args.audio_model, args.optim,
-        args.lr, args.n_epochs)
-if os.path.exists(args.exp_dir) == False:
-    print("\nCreating experiment directory: %s" % args.exp_dir)
-    os.makedirs("%s/models" % args.exp_dir)
+print("\nCreating experiment directory: %s" % args.exp_dir)
+os.makedirs("%s/models" % args.exp_dir)
 with open("%s/args.pkl" % args.exp_dir, "wb") as f:
     pickle.dump(args, f)
 
 print('Now starting training for {:d} epochs'.format(args.n_epochs))
 train(audio_model, train_loader, val_loader, args)
+
+# for speechcommands dataset, evaluate the best model on validation set on the test set
+if args.dataset == 'speechcommands':
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    sd = torch.load(args.exp_dir + '/models/best_audio_model.pth', map_location=device)
+    audio_model = torch.nn.DataParallel(audio_model)
+    audio_model.load_state_dict(sd)
+
+    # best model on the validation set
+    stats, _ = validate(audio_model, val_loader, args, 'valid_set')
+    # note it is NOT mean of class-wise accuracy
+    val_acc = stats[0]['acc']
+    val_mAUC = np.mean([stat['auc'] for stat in stats])
+    print('---------------evaluate on the validation set---------------')
+    print("Accuracy: {:.6f}".format(val_acc))
+    print("AUC: {:.6f}".format(val_mAUC))
+
+    # test the model on the evaluation set
+    eval_loader = torch.utils.data.DataLoader(
+        dataloader.AudiosetDataset(args.data_eval, label_csv=args.label_csv, audio_conf=val_audio_conf),
+        batch_size=args.batch_size*2, shuffle=False, num_workers=args.num_workers, pin_memory=True)
+    stats, _ = validate(audio_model, eval_loader, args, 'eval_set')
+    eval_acc = stats[0]['acc']
+    eval_mAUC = np.mean([stat['auc'] for stat in stats])
+    print('---------------evaluate on the test set---------------')
+    print("Accuracy: {:.6f}".format(eval_acc))
+    print("AUC: {:.6f}".format(eval_mAUC))
+    np.savetxt(args.exp_dir + '/eval_result.csv', [val_acc, val_mAUC, eval_acc, eval_mAUC])
+

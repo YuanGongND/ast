@@ -1,41 +1,49 @@
-#!/bin/bash       
-
+#!/bin/bash
 #SBATCH -p gpu
 #SBATCH -x sls-titan-[0-2]
+##SBATCH -p sm
 #SBATCH --gres=gpu:4
 #SBATCH -c 4
 #SBATCH -n 1
 #SBATCH --mem=48000
-#SBATCH --job-name="aed-sc"
-#SBATCH --output=./slurm_logs/esc-%j.txt
+#SBATCH --job-name="ast-sc"
+#SBATCH --output=./log_%j.txt
 
 set -x
+# comment this line if not running on sls cluster
 . /data/sls/scratch/share-201907/slstoolchainrc
-base_dir=/data/sls/scratch/yuangong/audioset
-source /data/sls/scratch/yuangong/aed-trans/venv-trans/bin/activate
-export TORCH_HOME=/data/sls/scratch/yuangong/aed-trans/model/
+source ../../venvast/bin/activate
+export TORCH_HOME=../../pretrained_models
 
-effmode=trans
-subset=speechcommand
+model=ast
+dataset=speechcommands
+imagenetpretrain=True
+audiosetpretrain=True
 bal=none
-lr=0.00001
-patience=2
+lr=2.5e-4
+epoch=30
 freqm=48
 timem=48
 mixup=0.6
-freeze=True
-batchsize=128
-mdlversion=8
-exp_dir=/data/sls/scratch/yuangong/aed-trans/exp/testspeechcommand22-$lr-$freeze-v$mdlversion-mix${mixup}-fm$freqm-tm$timem-bs$batchsize-correctroll20-20true-valid-truenewschedule-flexlr
+batch_size=128
+fstride=10
+tstride=10
+tr_data=./data/datafiles/speechcommand_train_data.json
+val_data=./data/datafiles/speechcommand_valid_data.json
+eval_data=./data/datafiles/speechcommand_eval_data.json
+exp_dir=./exp/test-${dataset}-f$fstride-t$tstride-p$imagenetpretrain-b$batch_size-lr${lr}-demo
 
 if [ -d $exp_dir ]; then
   echo 'exp exist'
   exit
 fi
-mkdir -p exp_dir
+mkdir -p $exp_dir
 
-CUDA_CACHE_DISABLE=1 python -W ignore ../run_sc.py --lr $lr --data-train $base_dir/datafiles/speechcommand_train_data.json \
---data-val $base_dir/datafiles/speechcommand_valid_data.json --exp-dir $exp_dir --clean-start --train-mode \
---n-print-steps 10 --num-workers 8 --label-csv $base_dir/utilities/speechcommand_class_labels_indices.csv --n_class 35 --n-epochs 30 --batch-size $batchsize \
---apc_trainable $freeze --apc_rnn_layer 2 --pretrain_mode ${effmode} --save_model True \
---freqm $freqm --timem $timem --mixup ${mixup} --bal ${bal} --lr_patience ${patience} --mdlversion ${mdlversion}
+python ./prep_sc.py
+
+CUDA_CACHE_DISABLE=1 python -W ignore ../../src/run.py --model ${model} --dataset ${dataset} \
+--data-train ${tr_data} --data-val ${val_data} --data-eval ${eval_data} --exp-dir $exp_dir \
+--label-csv ./data/speechcommands_class_labels_indices.csv --n_class 35 \
+--lr $lr --n-epochs ${epoch} --batch-size $batch_size --save_model True \
+--freqm $freqm --timem $timem --mixup ${mixup} --bal ${bal} \
+--tstride $tstride --fstride $fstride --imagenet_pretrain $imagenetpretrain --audioset_pretrain $audiosetpretrain > $exp_dir/log.txt

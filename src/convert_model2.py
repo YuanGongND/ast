@@ -19,33 +19,20 @@ from traintest import train, validate
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-#sd = torch.load('/Users/yuan/Documents/ast/pretrained_models/audio_model_wa.pth', map_location=device)
-sd = torch.load('/data/sls/scratch/yuangong/ast/pretrained_models/audio_model_wa.pth', map_location=device)
-audio_model = models.ASTModel(pretrain=False)
-audio_model = torch.nn.DataParallel(audio_model)
-audio_model.load_state_dict(sd, strict=False)
+mdl_list_m = ['/data/sls/scratch/yuangong/ast/pretrained_models/ensemble/audioset_10_10_0.4495.pth',
+'/data/sls/scratch/yuangong/ast/pretrained_models/ensemble/audioset_10_10_0.4483.pth',
+'/data/sls/scratch/yuangong/ast/pretrained_models/ensemble/audioset_10_10_0.4475.pth',
+'/data/sls/scratch/yuangong/ast/pretrained_models/ensemble/audioset_12_12_0.4467.pth',
+'/data/sls/scratch/yuangong/ast/pretrained_models/ensemble/audioset_14_14_0.4431.pth',
+'/data/sls/scratch/yuangong/ast/pretrained_models/ensemble/audioset_16_16_0.4422.pth']
 
-#
-parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--data_path", type=str, default='/data/sls/scratch/yuangong/audioset/datafiles/speechcommand_train_data.json', help="the root path of data json file")
-args = parser.parse_args()
+mdl_list_m = ['/data/sls/scratch/yuangong/ast/pretrained_models/ensemble/audioset_10_10_0.439.pth']
 
-args.dataset='audioset'
-args.data_eval='/data/sls/scratch/yuangong/audioset/datafiles/eval_data.json'
-args.label_csv='/data/sls/scratch/yuangong/ast/egs/audioset/class_labels_indices.csv'
-args.exp_dir='./tmp/'
-args.loss_fn = torch.nn.BCEWithLogitsLoss()
-norm_stats = {'audioset': [-4.2677393, 4.5689974], 'esc50': [-6.6268077, 5.358466],
-              'speechcommands': [-6.845978, 5.5654526]}
-target_length = {'audioset': 1024, 'esc50': 512, 'speechcommands': 128}
-# if add noise for data augmentation, only use for speech commands
-noise = {'audioset': False, 'esc50': False, 'speechcommands': True}
-
-val_audio_conf = {'num_mel_bins': 128, 'target_length': target_length[args.dataset], 'freqm': 0, 'timem': 0, 'mixup': 0, 'dataset': args.dataset, 'mode':'evaluation', 'mean':norm_stats[args.dataset][0], 'std':norm_stats[args.dataset][1], 'noise':False}
-eval_loader = torch.utils.data.DataLoader(
-    dataloader.AudiosetDataset(args.data_eval, label_csv=args.label_csv, audio_conf=val_audio_conf),
-    batch_size=24, shuffle=False, num_workers=32, pin_memory=True)
-stats, _ = validate(audio_model, eval_loader, args, 'eval_set')
-mAP = np.mean([stat['AP'] for stat in stats])
-print('---------------evaluate on the test set---------------')
-print("mAP: {:.6f}".format(mAP))
+for mdl in mdl_list_m:
+    print(mdl)
+    sd = torch.load(mdl, map_location=device)
+    fstride, tstride = int(mdl.split('/')[-1].split('_')[1]), int(mdl.split('/')[-1].split('_')[2].split('.')[0])
+    audio_model = models.ASTModel(fstride=fstride, tstride=tstride, imagenet_pretrain=False)
+    audio_model = torch.nn.DataParallel(audio_model)
+    audio_model.load_state_dict(sd, strict=False)
+    torch.save(audio_model.state_dict(), '/data/sls/scratch/yuangong/ast/pretrained_models/legal/'+mdl.split('/')[-1])

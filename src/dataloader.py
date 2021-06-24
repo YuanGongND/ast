@@ -76,6 +76,14 @@ class AudiosetDataset(Dataset):
         print('now using mix-up with rate {:f}'.format(self.mixup))
         self.dataset = self.audio_conf.get('dataset')
         print('now process ' + self.dataset)
+        # dataset spectrogram mean and std, used to normalize the input
+        self.norm_mean = self.audio_conf.get('mean')
+        self.norm_std = self.audio_conf.get('std')
+        print('use dataset mean {:.3f} and std {:.3f} to normalize the input'.format(self.norm_mean, self.norm_std))
+        # if add noise for data augmentation
+        self.noise = self.audio_conf.get('noise')
+        if self.noise == True:
+            print('now use noise augmentation')
 
         self.index_dict = make_index_dict(label_csv)
         self.label_num = len(self.index_dict)
@@ -115,7 +123,7 @@ class AudiosetDataset(Dataset):
         fbank = torchaudio.compliance.kaldi.fbank(waveform, htk_compat=True, sample_frequency=sr, use_energy=False,
                                                   window_type='hanning', num_mel_bins=self.melbins, dither=0.0, frame_shift=10)
 
-        target_length = self.audio_conf.get('target_length', 1056)
+        target_length = self.audio_conf.get('target_length')
         n_frames = fbank.shape[0]
 
         p = target_length - n_frames
@@ -179,7 +187,13 @@ class AudiosetDataset(Dataset):
             fbank = timem(fbank)
         fbank = torch.transpose(fbank, 0, 1)
 
-        fbank = (fbank + 4.2677393) / (4.5689974*2)
+        # normalize the input
+        fbank = (fbank - self.norm_mean) / (self.norm_std * 2)
+
+        if self.noise == True:
+            fbank = fbank + torch.rand(fbank.shape[0], fbank.shape[1]) * np.random.rand() / 10
+            fbank = torch.roll(fbank, np.random.randint(-10, 10), 0)
+
         mix_ratio = min(mix_lambda, 1-mix_lambda) / max(mix_lambda, 1-mix_lambda)
 
         # the output fbank shape is [time_frame_num, frequency_bins], e.g., [1024, 128]

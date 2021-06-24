@@ -9,6 +9,7 @@ import torch
 import torch.nn as nn
 from torch.cuda.amp import autocast
 import os
+import wget
 os.environ['TORCH_HOME'] = '../../pretrained_models'
 import timm
 from timm.models.layers import to_2tuple,trunc_normal_
@@ -39,65 +40,101 @@ class ASTModel(nn.Module):
     :param tstride: the stride of patch spliting on the time dimension, for 16*16 patchs, tstride=16 means no overlap, tstride=10 means overlap of 6
     :param input_fdim: the number of frequency bins of the input spectrogram
     :param input_fdim: the number of time frames of the input spectrogram
-    :param pretrain: if use ImageNet pretrained model
+    :param imagenet_pretrain: if use ImageNet pretrained model
+    :param audioset_pretrain: if pretrain the model with full AudioSet in addition to ImageNet
     :param model_size: the model size of AST, should be in [tiny224, small224, base224, base384], base224 and base 384 are same model, but are trained differently during pretraining.
     """
-    def __init__(self, label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, pretrain=True, model_size='base384'):
+    def __init__(self, label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=True, audioset_pretrain=False, model_size='base384'):
 
         super(ASTModel, self).__init__()
         print('---------------AST Model Summary---------------')
-        assert timm.__version__ == '0.4.5', 'Please use timm == 0.4.5, the code might be not compatible with newer versions.'
-
+        assert timm.__version__ == '0.4.5', 'Please use timm == 0.4.5, the code might not be compatible with newer versions.'
+        print('ImageNet pretraining: {:s}, AudioSet pretraining: {:s}'.format(str(imagenet_pretrain),str(audioset_pretrain)))
         # override timm input shape restriction
         timm.models.vision_transformer.PatchEmbed = PatchEmbed
 
-        if model_size == 'tiny224':
-            self.v = timm.create_model('vit_deit_tiny_distilled_patch16_224', pretrained=pretrain)
-        elif model_size == 'small224':
-            self.v = timm.create_model('vit_deit_small_distilled_patch16_224', pretrained=pretrain)
-        elif model_size == 'base224':
-            self.v = timm.create_model('vit_deit_base_distilled_patch16_224', pretrained=pretrain)
-        elif model_size == 'base384':
-            self.v = timm.create_model('vit_deit_base_distilled_patch16_384', pretrained=pretrain)
-        else:
-            raise Exception('Model size must be one of tiny224, small224, base224, base384.')
-        self.original_num_patches = self.v.patch_embed.num_patches
-        self.oringal_hw = int(self.original_num_patches ** 0.5)
-        self.original_embedding_dim = self.v.pos_embed.shape[2]
-        self.mlp_head = nn.Sequential(nn.LayerNorm(self.original_embedding_dim), nn.Linear(self.original_embedding_dim, label_dim))
+        # if AudioSet pretraining is not used (but ImageNet pretraining may still apply)
+        if audioset_pretrain == False:
+            if model_size == 'tiny224':
+                self.v = timm.create_model('vit_deit_tiny_distilled_patch16_224', pretrained=imagenet_pretrain)
+            elif model_size == 'small224':
+                self.v = timm.create_model('vit_deit_small_distilled_patch16_224', pretrained=imagenet_pretrain)
+            elif model_size == 'base224':
+                self.v = timm.create_model('vit_deit_base_distilled_patch16_224', pretrained=imagenet_pretrain)
+            elif model_size == 'base384':
+                self.v = timm.create_model('vit_deit_base_distilled_patch16_384', pretrained=imagenet_pretrain)
+            else:
+                raise Exception('Model size must be one of tiny224, small224, base224, base384.')
+            self.original_num_patches = self.v.patch_embed.num_patches
+            self.oringal_hw = int(self.original_num_patches ** 0.5)
+            self.original_embedding_dim = self.v.pos_embed.shape[2]
+            self.mlp_head = nn.Sequential(nn.LayerNorm(self.original_embedding_dim), nn.Linear(self.original_embedding_dim, label_dim))
 
-        # automatcially get the intermediate shape
-        f_dim, t_dim = self.get_shape(fstride, tstride, input_fdim, input_tdim)
-        num_patches = f_dim * t_dim
-        self.v.patch_embed.num_patches = num_patches
-        print('frequncey stride={:d}, time stride={:d}'.format(fstride, tstride))
-        print('number of patches={:d}'.format(num_patches))
+            # automatcially get the intermediate shape
+            f_dim, t_dim = self.get_shape(fstride, tstride, input_fdim, input_tdim)
+            num_patches = f_dim * t_dim
+            self.v.patch_embed.num_patches = num_patches
+            print('frequncey stride={:d}, time stride={:d}'.format(fstride, tstride))
+            print('number of patches={:d}'.format(num_patches))
 
-        # the linear projection layer
-        new_proj = torch.nn.Conv2d(1, self.original_embedding_dim, kernel_size=(16, 16), stride=(fstride, tstride))
-        if pretrain == True:
-            new_proj.weight = torch.nn.Parameter(torch.sum(self.v.patch_embed.proj.weight, dim=1).unsqueeze(1))
-            new_proj.bias = self.v.patch_embed.proj.bias
-        self.v.patch_embed.proj = new_proj
+            # the linear projection layer
+            new_proj = torch.nn.Conv2d(1, self.original_embedding_dim, kernel_size=(16, 16), stride=(fstride, tstride))
+            if imagenet_pretrain == True:
+                new_proj.weight = torch.nn.Parameter(torch.sum(self.v.patch_embed.proj.weight, dim=1).unsqueeze(1))
+                new_proj.bias = self.v.patch_embed.proj.bias
+            self.v.patch_embed.proj = new_proj
 
-        # the positional embedding
-        if pretrain == True:
-            # get the positional embedding from deit model, skip the first two tokens (cls token and distillation token), reshape it to original 2D shape (24*24).
-            new_pos_embed = self.v.pos_embed[:, 2:, :].detach().reshape(1, self.original_num_patches, self.original_embedding_dim).transpose(1, 2).reshape(1, self.original_embedding_dim, self.oringal_hw, self.oringal_hw)
-            # interpolate the second dimension of the positional embedding
-            new_pos_embed = torch.nn.functional.interpolate(new_pos_embed, size=(self.oringal_hw, t_dim), mode='bilinear')
-            # chop the first dimension of the positional embedding (from middle)
-            new_pos_embed = new_pos_embed[:, :, int(self.oringal_hw/2) - int(f_dim/2): int(self.oringal_hw/2) - int(f_dim/2) + f_dim, :]
-            # flatten the positional embedding
-            new_pos_embed = new_pos_embed.reshape(1, self.original_embedding_dim, num_patches).transpose(1,2)
-            # concatenate the above positional embedding with the cls token and distillation token of the deit model.
+            # the positional embedding
+            if imagenet_pretrain == True:
+                # get the positional embedding from deit model, skip the first two tokens (cls token and distillation token), reshape it to original 2D shape (24*24).
+                new_pos_embed = self.v.pos_embed[:, 2:, :].detach().reshape(1, self.original_num_patches, self.original_embedding_dim).transpose(1, 2).reshape(1, self.original_embedding_dim, self.oringal_hw, self.oringal_hw)
+                # interpolate the second dimension of the positional embedding
+                new_pos_embed = torch.nn.functional.interpolate(new_pos_embed, size=(self.oringal_hw, t_dim), mode='bilinear')
+                # chop the first dimension of the positional embedding (from middle)
+                new_pos_embed = new_pos_embed[:, :, int(self.oringal_hw/2) - int(f_dim/2): int(self.oringal_hw/2) - int(f_dim/2) + f_dim, :]
+                # flatten the positional embedding
+                new_pos_embed = new_pos_embed.reshape(1, self.original_embedding_dim, num_patches).transpose(1,2)
+                # concatenate the above positional embedding with the cls token and distillation token of the deit model.
+                self.v.pos_embed = nn.Parameter(torch.cat([self.v.pos_embed[:, :2, :].detach(), new_pos_embed], dim=1))
+            else:
+                # if not use imagenet pretrained model, just randomly initialize a learnable positional embedding
+                # TODO can use sinusoidal positional embedding instead
+                new_pos_embed = nn.Parameter(torch.zeros(1, self.v.patch_embed.num_patches + 2, self.original_embedding_dim))
+                self.v.pos_embed = new_pos_embed
+                trunc_normal_(self.v.pos_embed, std=.02)
+
+        # now load a model that is pretrained on both ImageNet and AudioSet
+        elif audioset_pretrain == True:
+            if audioset_pretrain == True and imagenet_pretrain == False:
+                raise ValueError('currently model pretrained on only audioset is not supported, please set imagenet_pretrain = True to use audioset pretrained model.')
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            if os.path.exists('../../pretrained_models/ast_audioset.pth') == False:
+                # this model performs 0.4593 mAP on the audioset eval set
+                audioset_mdl_url = 'https://www.dropbox.com/s/cv4knew8mvbrnvq/audioset_0.4593.pth?dl=1'
+                wget.download(audioset_mdl_url, out='../../pretrained_models/ast_audioset.pth')
+            sd = torch.load('/data/sls/scratch/yuangong/ast/pretrained_models/audio_model_wa.pth', map_location=device)
+            audio_model = ASTModel(label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=False, audioset_pretrain=False, model_size='base384')
+            audio_model = torch.nn.DataParallel(audio_model)
+            audio_model.load_state_dict(sd, strict=False)
+            self.v = audio_model.module.v
+            self.original_embedding_dim = self.v.pos_embed.shape[2]
+            self.mlp_head = nn.Sequential(nn.LayerNorm(self.original_embedding_dim), nn.Linear(self.original_embedding_dim, label_dim))
+
+            f_dim, t_dim = self.get_shape(fstride, tstride, input_fdim, input_tdim)
+            num_patches = f_dim * t_dim
+            self.v.patch_embed.num_patches = num_patches
+            print('frequncey stride={:d}, time stride={:d}'.format(fstride, tstride))
+            print('number of patches={:d}'.format(num_patches))
+
+            new_pos_embed = self.v.pos_embed[:, 2:, :].detach().reshape(1, 1212, 768).transpose(1, 2).reshape(1, 768, 12, 101)
+            # if the input sequence length is larger than the original audioset (10s), then cut the positional embedding
+            if t_dim < 101:
+                new_pos_embed = new_pos_embed[:, :, :, 50 - int(t_dim/2): 50 - int(t_dim/2) + t_dim]
+            # otherwise interpolate
+            else:
+                new_pos_embed = torch.nn.functional.interpolate(new_pos_embed, size=(12, t_dim), mode='bilinear')
+            new_pos_embed = new_pos_embed.reshape(1, 768, num_patches).transpose(1, 2)
             self.v.pos_embed = nn.Parameter(torch.cat([self.v.pos_embed[:, :2, :].detach(), new_pos_embed], dim=1))
-        else:
-            # if not use pretrained model, just randomly initialize a learnable positional embedding
-            # TODO can use sinusoidal positional embedding instead
-            new_pos_embed = nn.Parameter(torch.zeros(1, self.v.patch_embed.num_patches + 2, self.original_embedding_dim))
-            self.v.pos_embed = new_pos_embed
-            trunc_normal_(self.v.pos_embed, std=.02)
 
     def get_shape(self, fstride, tstride, input_fdim=128, input_tdim=1024):
         test_input = torch.randn(1, 1, input_fdim, input_tdim)
@@ -136,6 +173,14 @@ if __name__ == '__main__':
     input_tdim = 100
     ast_mdl = ASTModel(input_tdim=input_tdim)
     # input a batch of 10 spectrogram, each with 100 time frames and 128 frequency bins
+    test_input = torch.rand([10, input_tdim, 128])
+    test_output = ast_mdl(test_input)
+    # output should be in shape [10, 527], i.e., 10 samples, each with prediction of 527 classes.
+    print(test_output.shape)
+
+    input_tdim = 512
+    ast_mdl = ASTModel(input_tdim=input_tdim,label_dim=50, audioset_pretrain=True)
+    # input a batch of 10 spectrogram, each with 512 time frames and 128 frequency bins
     test_input = torch.rand([10, input_tdim, 128])
     test_output = ast_mdl(test_input)
     # output should be in shape [10, 527], i.e., 10 samples, each with prediction of 527 classes.
