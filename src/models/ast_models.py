@@ -112,7 +112,7 @@ class ASTModel(nn.Module):
                 # this model performs 0.4593 mAP on the audioset eval set
                 audioset_mdl_url = 'https://www.dropbox.com/s/cv4knew8mvbrnvq/audioset_0.4593.pth?dl=1'
                 wget.download(audioset_mdl_url, out='../../pretrained_models/ast_audioset.pth')
-            sd = torch.load('/data/sls/scratch/yuangong/ast/pretrained_models/audio_model_wa.pth', map_location=device)
+            sd = torch.load('../../pretrained_models/ast_audioset.pth', map_location=device)
             audio_model = ASTModel(label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=False, audioset_pretrain=False, model_size='base384')
             audio_model = torch.nn.DataParallel(audio_model)
             audio_model.load_state_dict(sd, strict=False)
