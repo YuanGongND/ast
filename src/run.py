@@ -86,7 +86,9 @@ if args.model == 'ast':
         dataloader.AudiosetDataset(args.data_val, label_csv=args.label_csv, audio_conf=val_audio_conf),
         batch_size=args.batch_size*2, shuffle=False, num_workers=args.num_workers, pin_memory=True)
 
-    audio_model = models.ASTModel(label_dim=args.n_class, fstride=args.fstride, tstride=args.tstride, input_fdim=128, input_tdim=target_length[args.dataset], imagenet_pretrain=args.imagenet_pretrain, audioset_pretrain=args.audioset_pretrain,model_size='base384')
+    audio_model = models.ASTModel(label_dim=args.n_class, fstride=args.fstride, tstride=args.tstride, input_fdim=128,
+                                  input_tdim=target_length[args.dataset], imagenet_pretrain=args.imagenet_pretrain,
+                                  audioset_pretrain=args.audioset_pretrain, model_size='base384')
 
 print("\nCreating experiment directory: %s" % args.exp_dir)
 os.makedirs("%s/models" % args.exp_dir)
