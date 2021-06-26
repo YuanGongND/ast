@@ -88,10 +88,16 @@ class ASTModel(nn.Module):
             if imagenet_pretrain == True:
                 # get the positional embedding from deit model, skip the first two tokens (cls token and distillation token), reshape it to original 2D shape (24*24).
                 new_pos_embed = self.v.pos_embed[:, 2:, :].detach().reshape(1, self.original_num_patches, self.original_embedding_dim).transpose(1, 2).reshape(1, self.original_embedding_dim, self.oringal_hw, self.oringal_hw)
-                # interpolate the second dimension of the positional embedding
-                new_pos_embed = torch.nn.functional.interpolate(new_pos_embed, size=(self.oringal_hw, t_dim), mode='bilinear')
-                # chop the first dimension of the positional embedding (from middle)
-                new_pos_embed = new_pos_embed[:, :, int(self.oringal_hw/2) - int(f_dim/2): int(self.oringal_hw/2) - int(f_dim/2) + f_dim, :]
+                # cut (from middle) or interpolate the second dimension of the positional embedding
+                if t_dim <= self.oringal_hw:
+                    new_pos_embed = new_pos_embed[:, :, :, int(self.oringal_hw / 2) - int(t_dim / 2): int(self.oringal_hw / 2) - int(t_dim / 2) + t_dim]
+                else:
+                    new_pos_embed = torch.nn.functional.interpolate(new_pos_embed, size=(self.oringal_hw, t_dim), mode='bilinear')
+                # cut (from middle) or interpolate the first dimension of the positional embedding
+                if f_dim <= self.oringal_hw:
+                    new_pos_embed = new_pos_embed[:, :, int(self.oringal_hw / 2) - int(f_dim / 2): int(self.oringal_hw / 2) - int(f_dim / 2) + f_dim, :]
+                else:
+                    new_pos_embed = torch.nn.functional.interpolate(new_pos_embed, size=(f_dim, t_dim), mode='bilinear')
                 # flatten the positional embedding
                 new_pos_embed = new_pos_embed.reshape(1, self.original_embedding_dim, num_patches).transpose(1,2)
                 # concatenate the above positional embedding with the cls token and distillation token of the deit model.
