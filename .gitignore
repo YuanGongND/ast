@@ -3,6 +3,7 @@
 *.pyc
 *.DS_Store
 pretrained_models/ensemble/*
+pretrained_models/load_pretrained_model_internal.py
 pretrained_models/legal_pretrained_mdl/*
 src/convert_model.py
 src/convert_model2.py

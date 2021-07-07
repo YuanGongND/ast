@@ -1,8 +1,8 @@
 #!/bin/bash
-##SBATCH -p sm
-##SBATCH -x sls-sm-1,sls-2080-[1,3],sls-1080-3,sls-sm-5
-#SBATCH -p gpu
-#SBATCH -x sls-titan-[0-2]
+#SBATCH -p sm
+#SBATCH -x sls-sm-1,sls-2080-[1,3],sls-1080-3,sls-sm-5
+##SBATCH -p gpu
+##SBATCH -x sls-titan-[0-2]
 #SBATCH --gres=gpu:4
 #SBATCH -c 4
 #SBATCH -n 1
@@ -41,7 +41,7 @@ mixup=0.5
 fstride=10
 tstride=10
 batch_size=12
-exp_dir=./exp/test-${set}-f$fstride-t$tstride-p$imagenetpretrain-b$batch_size-lr${lr}
+exp_dir=./exp/test-${set}-f$fstride-t$tstride-p$imagenetpretrain-b$batch_size-lr${lr}-demo
 if [ -d $exp_dir ]; then
   echo 'exp exist'
   exit
