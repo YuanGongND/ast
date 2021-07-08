@@ -35,7 +35,7 @@ Please cite our paper(s) if you find this repository useful. The first paper pro
   
 ## Getting Started  
 
-Step 1. Clone this repository and set it as the working directory, create a virtual environment and install the dependencies.
+Step 1. Clone or download this repository and set it as the working directory, create a virtual environment and install the dependencies.
 
 ```
 cd ast/ 
@@ -116,7 +116,7 @@ cd ast/egs/speechcommands
 
 ## Audioset Recipe  
 Audioset is a little bit more complex, you will need to prepare your data json files (i.e., `train_data.json` and `eval_data.json`) by your self.
-The reason is that the raw wavefiles of Audioset is not released and you need to download them by yourself. Please refer to `ast/egs/esc50/prep_esc50.py` and `ast/egs/speechcommands/prep_sc.py`. We have put a sample json file in `ast/egs/audioset/data/datafiles`, please generate files in the same format. Please keep the label code consistent with `ast/egs/audioset/data/class_labels_indices.csv`.
+The reason is that the raw wavefiles of Audioset is not released and you need to download them by yourself. We have put a sample json file in `ast/egs/audioset/data/datafiles`, please generate files in the same format (You can also refer to `ast/egs/esc50/prep_esc50.py` and `ast/egs/speechcommands/prep_sc.py`.). Please keep the label code consistent with `ast/egs/audioset/data/class_labels_indices.csv`.
 
 Once you have the json files, you will need to generate the sampling weight file of your training data (please check our [PSLA paper](https://arxiv.org/abs/2102.01243) to see why it is needed).
 ```
