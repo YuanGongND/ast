@@ -57,14 +57,14 @@ ASTModel(label_dim=527, \
 ```  
 
 **Parameters:**\
-`label_dim` : The number of classes.\
-`fstride`:  The stride of patch spliting on the frequency dimension, for 16\*16 patchs, fstride=16 means no overlap, fstride=10 means overlap of 6 (used in the paper).\
-`tstride`:  The stride of patch spliting on the time dimension, for 16*16 patchs, tstride=16 means no overlap, tstride=10 means overlap of 6 (used in the paper).\
-`input_fdim`: The number of frequency bins of the input spectrogram.\
-`input_tdim`: The number of time frames of the input spectrogram.\
-`imagenet_pretrain`: If `True`, use ImageNet pretrained model.\
-`audioset_pretrain`: If`True`,  use full AudioSet And ImageNet pretrained model. Currently only support `base384` model with `fstride=tstride=10`.\
-`model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]`
+`label_dim` : The number of classes (default:`527`).\
+`fstride`:  The stride of patch spliting on the frequency dimension, for 16\*16 patchs, fstride=16 means no overlap, fstride=10 means overlap of 6 (used in the paper). (default:`10`)\
+`tstride`:  The stride of patch spliting on the time dimension, for 16*16 patchs, tstride=16 means no overlap, tstride=10 means overlap of 6 (used in the paper). (default:`10`)\
+`input_fdim`: The number of frequency bins of the input spectrogram. (default:`128`)\
+`input_tdim`: The number of time frames of the input spectrogram. (default:`1024`, i.e., 10.24s)\
+`imagenet_pretrain`: If `True`, use ImageNet pretrained model. (default: `True`, we recommend to set it as True for all tasks.)\
+`audioset_pretrain`: If`True`,  use full AudioSet And ImageNet pretrained model. Currently only support `base384` model with `fstride=tstride=10`. (default: `True`, we recommend to set it as True for all tasks except AudioSet.)\
+`model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]` (default: `base384`).
 
 ``` 
 cd ast/src
