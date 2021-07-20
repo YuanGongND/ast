@@ -69,6 +69,9 @@ ASTModel(label_dim=527, \
 `audioset_pretrain`: If`True`,  use full AudioSet And ImageNet pretrained model. Currently only support `base384` model with `fstride=tstride=10`. (default: `False`, we recommend to set it as `True` for all tasks except AudioSet.)\
 `model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]` (default: `base384`).
 
+**Input:** Tensor in shape `[batch_size, temporal_frame_num, frequency_bin_num]`. \
+**Output:** Tensor of raw logits (i.e., without Sigmoid) in shape `[batch_size, label_dim]`.
+
 ``` 
 cd ast/src
 python
