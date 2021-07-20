@@ -3,7 +3,7 @@
 # @Author  : Yuan Gong
 # @Affiliation  : Massachusetts Institute of Technology
 # @Email   : yuangong@mit.edu
-# @File    : dataloader.py.py
+# @File    : dataloader.py
 
 # modified from:
 # Author: David Harwath
