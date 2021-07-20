@@ -69,7 +69,7 @@ ASTModel(label_dim=527, \
 `audioset_pretrain`: If`True`,  use full AudioSet And ImageNet pretrained model. Currently only support `base384` model with `fstride=tstride=10`. (default: `False`, we recommend to set it as `True` for all tasks except AudioSet.)\
 `model_size`: The model size of AST, should be in `[tiny224, small224, base224, base384]` (default: `base384`).
 
-**Input:** Tensor in shape `[batch_size, temporal_frame_num, frequency_bin_num]`. \
+**Input:** Tensor in shape `[batch_size, temporal_frame_num, frequency_bin_num]`. Note: the input spectrogram should be normalized with dataset mean and std, see [here](https://github.com/YuanGongND/ast/blob/102f0477099f83e04f6f2b30a498464b78bbaf46/src/dataloader.py#L191). \
 **Output:** Tensor of raw logits (i.e., without Sigmoid) in shape `[batch_size, label_dim]`.
 
 ``` 
