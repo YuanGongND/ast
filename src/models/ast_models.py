@@ -44,12 +44,14 @@ class ASTModel(nn.Module):
     :param audioset_pretrain: if pretrain the model with full AudioSet in addition to ImageNet
     :param model_size: the model size of AST, should be in [tiny224, small224, base224, base384], base224 and base 384 are same model, but are trained differently during pretraining.
     """
-    def __init__(self, label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=True, audioset_pretrain=False, model_size='base384'):
+    def __init__(self, label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=True, audioset_pretrain=False, model_size='base384', verbose=True):
 
         super(ASTModel, self).__init__()
-        print('---------------AST Model Summary---------------')
         assert timm.__version__ == '0.4.5', 'Please use timm == 0.4.5, the code might not be compatible with newer versions.'
-        print('ImageNet pretraining: {:s}, AudioSet pretraining: {:s}'.format(str(imagenet_pretrain),str(audioset_pretrain)))
+
+        if verbose == True:
+            print('---------------AST Model Summary---------------')
+            print('ImageNet pretraining: {:s}, AudioSet pretraining: {:s}'.format(str(imagenet_pretrain),str(audioset_pretrain)))
         # override timm input shape restriction
         timm.models.vision_transformer.PatchEmbed = PatchEmbed
 
@@ -74,8 +76,9 @@ class ASTModel(nn.Module):
             f_dim, t_dim = self.get_shape(fstride, tstride, input_fdim, input_tdim)
             num_patches = f_dim * t_dim
             self.v.patch_embed.num_patches = num_patches
-            print('frequncey stride={:d}, time stride={:d}'.format(fstride, tstride))
-            print('number of patches={:d}'.format(num_patches))
+            if verbose == True:
+                print('frequncey stride={:d}, time stride={:d}'.format(fstride, tstride))
+                print('number of patches={:d}'.format(num_patches))
 
             # the linear projection layer
             new_proj = torch.nn.Conv2d(1, self.original_embedding_dim, kernel_size=(16, 16), stride=(fstride, tstride))
@@ -113,13 +116,15 @@ class ASTModel(nn.Module):
         elif audioset_pretrain == True:
             if audioset_pretrain == True and imagenet_pretrain == False:
                 raise ValueError('currently model pretrained on only audioset is not supported, please set imagenet_pretrain = True to use audioset pretrained model.')
+            if model_size != 'base384':
+                raise ValueError('currently only has base384 AudioSet pretrained model.')
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             if os.path.exists('../../pretrained_models/ast_audioset.pth') == False:
                 # this model performs 0.4593 mAP on the audioset eval set
                 audioset_mdl_url = 'https://www.dropbox.com/s/cv4knew8mvbrnvq/audioset_0.4593.pth?dl=1'
                 wget.download(audioset_mdl_url, out='../../pretrained_models/ast_audioset.pth')
             sd = torch.load('../../pretrained_models/ast_audioset.pth', map_location=device)
-            audio_model = ASTModel(label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=False, audioset_pretrain=False, model_size='base384')
+            audio_model = ASTModel(label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=False, audioset_pretrain=False, model_size='base384', verbose=False)
             audio_model = torch.nn.DataParallel(audio_model)
             audio_model.load_state_dict(sd, strict=False)
             self.v = audio_model.module.v
@@ -129,8 +134,9 @@ class ASTModel(nn.Module):
             f_dim, t_dim = self.get_shape(fstride, tstride, input_fdim, input_tdim)
             num_patches = f_dim * t_dim
             self.v.patch_embed.num_patches = num_patches
-            print('frequncey stride={:d}, time stride={:d}'.format(fstride, tstride))
-            print('number of patches={:d}'.format(num_patches))
+            if verbose == True:
+                print('frequncey stride={:d}, time stride={:d}'.format(fstride, tstride))
+                print('number of patches={:d}'.format(num_patches))
 
             new_pos_embed = self.v.pos_embed[:, 2:, :].detach().reshape(1, 1212, 768).transpose(1, 2).reshape(1, 768, 12, 101)
             # if the input sequence length is larger than the original audioset (10s), then cut the positional embedding
