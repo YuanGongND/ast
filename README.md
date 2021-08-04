@@ -7,7 +7,7 @@
  - [Speechcommands Recipe](#Speechcommands-V2-Recipe)  
  - [AudioSet Recipe](#Audioset-Recipe)
  - [Pretrained Models](#Pretrained-Models)
- - [Use Pretrained Model For Downstream Tasks](#Use-Pretrained-Model-For-Downstream-Task)
+ - [Use Pretrained Model For Downstream Tasks](#Use-Pretrained-Model-For-Downstream-Tasks)
  - [Contact](#Contact)
 
 ## Introduction  
