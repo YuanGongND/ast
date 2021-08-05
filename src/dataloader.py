@@ -83,9 +83,9 @@ class AudiosetDataset(Dataset):
         # set it as True ONLY when you are getting the normalization stats.
         self.skip_norm = self.audio_conf.get('skip_norm') if self.audio_conf.get('skip_norm') else False
         if self.skip_norm:
-            print('now skip normalization (use it ONLY when you are computing the )')
+            print('now skip normalization (use it ONLY when you are computing the normalization stats).')
         else:
-            print('use dataset mean {:.3f} and std {:.3f} to normalize the input'.format(self.norm_mean, self.norm_std))
+            print('use dataset mean {:.3f} and std {:.3f} to normalize the input.'.format(self.norm_mean, self.norm_std))
         # if add noise for data augmentation
         self.noise = self.audio_conf.get('noise')
         if self.noise == True:
