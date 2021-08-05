@@ -79,7 +79,9 @@ class AudiosetDataset(Dataset):
         # dataset spectrogram mean and std, used to normalize the input
         self.norm_mean = self.audio_conf.get('mean')
         self.norm_std = self.audio_conf.get('std')
-        print('use dataset mean {:.3f} and std {:.3f} to normalize the input'.format(self.norm_mean, self.norm_std))
+        self.get_norm_stats = self.audio_conf.get('get_norm_stats') if self.audio_conf.get('get_norm_stats') else False
+        if not self.get_norm_stats:
+            print('use dataset mean {:.3f} and std {:.3f} to normalize the input'.format(self.norm_mean, self.norm_std))
         # if add noise for data augmentation
         self.noise = self.audio_conf.get('noise')
         if self.noise == True:
@@ -187,8 +189,9 @@ class AudiosetDataset(Dataset):
             fbank = timem(fbank)
         fbank = torch.transpose(fbank, 0, 1)
 
-        # normalize the input
-        fbank = (fbank - self.norm_mean) / (self.norm_std * 2)
+        # normalize the input if not getting the stats for downstream task
+        if not self.get_norm_stats:
+            fbank = (fbank - self.norm_mean) / (self.norm_std * 2)
 
         if self.noise == True:
             fbank = fbank + torch.rand(fbank.shape[0], fbank.shape[1]) * np.random.rand() / 10
