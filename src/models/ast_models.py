@@ -39,7 +39,7 @@ class ASTModel(nn.Module):
     :param fstride: the stride of patch spliting on the frequency dimension, for 16*16 patchs, fstride=16 means no overlap, fstride=10 means overlap of 6
     :param tstride: the stride of patch spliting on the time dimension, for 16*16 patchs, tstride=16 means no overlap, tstride=10 means overlap of 6
     :param input_fdim: the number of frequency bins of the input spectrogram
-    :param input_fdim: the number of time frames of the input spectrogram
+    :param input_tdim: the number of time frames of the input spectrogram
     :param imagenet_pretrain: if use ImageNet pretrained model
     :param audioset_pretrain: if pretrain the model with full AudioSet in addition to ImageNet
     :param model_size: the model size of AST, should be in [tiny224, small224, base224, base384], base224 and base 384 are same model, but are trained differently during pretraining.
