@@ -41,8 +41,8 @@ class ASTModel(nn.Module):
     :param input_fdim: the number of frequency bins of the input spectrogram
     :param input_tdim: the number of time frames of the input spectrogram
     :param imagenet_pretrain: if use ImageNet pretrained model
-    :param audioset_pretrain: if pretrain the model with full AudioSet in addition to ImageNet
-    :param model_size: the model size of AST, should be in [tiny224, small224, base224, base384], base224 and base 384 are same model, but are trained differently during pretraining.
+    :param audioset_pretrain: if use full AudioSet and ImageNet pretrained model
+    :param model_size: the model size of AST, should be in [tiny224, small224, base224, base384], base224 and base 384 are same model, but are trained differently during ImageNet pretraining.
     """
     def __init__(self, label_dim=527, fstride=10, tstride=10, input_fdim=128, input_tdim=1024, imagenet_pretrain=True, audioset_pretrain=False, model_size='base384', verbose=True):
 
