@@ -164,6 +164,7 @@ If you want to finetune AudioSet-pretrained AST model on your task, you can simp
 You can use the pretrained AST model for your own dataset. There are two ways to doing so.
 
 You can of course only take ``ast/src/models/ast_models.py``, set ``audioset_pretrain=True``, and use it with your training pipeline, the only thing need to take care of is the input normalization, we normalize our input to 0 mean and 0.5 std. To use the pretrained model, you should roughly normalize the input to this range. You can check ``ast/src/get_norm_stats.py`` to see how we compute the stats, or you can try using our AudioSet normalization ``input_spec = (input_spec + 4.26) / (4.57 * 2)``. Using your own training pipeline might be easier if you already have a good one.
+Please note that AST needs smaller learning rate (we use 10 times smaller learning rate than our CNN model proposed in the [PSLA paper](https://arxiv.org/abs/2102.01243)) and converges faster, so please search the learning rate and learning rate scheduler for your task. 
 
 If you want to use our training pipeline, you would need to modify below for your new dataset.
 1. You need to create a json file, and a label index for your dataset, see ``ast/egs/audioset/data/`` for an example.
