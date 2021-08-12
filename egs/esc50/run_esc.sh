@@ -32,7 +32,7 @@ epoch=25
 batch_size=48
 fstride=10
 tstride=10
-base_exp_dir=./exp/test-${dataset}-f$fstride-t$tstride-p$astpretrain-b$batch_size-lr${lr}
+base_exp_dir=./exp/test-${dataset}-f$fstride-t$tstride-imp$imagenetpretrain-asp$audiosetpretrain-b$batch_size-lr${lr}
 
 python ./prep_esc50.py
 
