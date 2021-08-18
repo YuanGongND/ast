@@ -27,7 +27,6 @@ for entry in cur_data:
     cur_id = entry['video_id']
     if cur_id not in oe:
         print('There is an eval audio not in official release :' + cur_id)
-    else:
-        our_eval_id.append(cur_id)
+    our_eval_id.append(cur_id)
 
 np.savetxt('our_as_eval_id.csv', our_eval_id, delimiter=',', fmt='%s')
