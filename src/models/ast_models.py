@@ -195,5 +195,5 @@ if __name__ == '__main__':
     # input a batch of 10 spectrogram, each with 512 time frames and 128 frequency bins
     test_input = torch.rand([10, input_tdim, 128])
     test_output = ast_mdl(test_input)
-    # output should be in shape [10, 527], i.e., 10 samples, each with prediction of 527 classes.
+    # output should be in shape [10, 50], i.e., 10 samples, each with prediction of 50 classes.
     print(test_output.shape)
