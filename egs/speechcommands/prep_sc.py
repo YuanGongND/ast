@@ -19,7 +19,7 @@ if os.path.exists('./data/speech_commands_v0.02') == False:
     # we use the 35 class v2 dataset, which is used in torchaudio https://pytorch.org/audio/stable/_modules/torchaudio/datasets/speechcommands.html
     sc_url = 'https://storage.googleapis.com/download.tensorflow.org/data/speech_commands_v0.02.tar.gz'
     wget.download(sc_url, out='./data/')
-    os.mkdir('./data/speechcommands')
+    os.mkdir('./data/speech_commands_v0.02')
     os.system('tar -xzvf ./data/speech_commands_v0.02.tar.gz -C ./data/speech_commands_v0.02')
     os.remove('./data/speech_commands_v0.02.tar.gz')
 
