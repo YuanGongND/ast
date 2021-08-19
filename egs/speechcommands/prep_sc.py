@@ -102,7 +102,7 @@ if os.path.exists('./data/datafiles') == False:
             filelist = f.readlines()
         for file in filelist:
             cur_label = label_map[file.split('/')[0]]
-            cur_path = './data/SpeechCommands/speech_commands_v0.02/' + file.strip()
+            cur_path = os.path.abspath(os.getcwd()) + '/data/speech_commands_v0.02/' + file.strip()
             cur_dict = {"wav": cur_path, "labels": '/m/spcmd'+cur_label.zfill(2)}
             wav_list.append(cur_dict)
         if split == 'train':
