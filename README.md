@@ -25,11 +25,14 @@ The AST model file is in `src/models/ast_models.py`, the recipes are in `egs/[au
 ## Citing  
 Please cite our paper(s) if you find this repository useful. The first paper proposes the Audio Spectrogram Transformer while the second paper describes the training pipeline that we applied on AST to achieve the new state-of-the-art on AudioSet.   
 ```  
-@article{gong2021ast,  
- title={Ast: Audio spectrogram transformer}, 
- author={Gong, Yuan and Chung, Yu-An and Glass, James}, 
- journal={arXiv preprint arXiv:2104.01778}, 
- year={2021}}  
+@inproceedings{gong21b_interspeech,
+  author={Yuan Gong and Yu-An Chung and James Glass},
+  title={{AST: Audio Spectrogram Transformer}},
+  year=2021,
+  booktitle={Proc. Interspeech 2021},
+  pages={571--575},
+  doi={10.21437/Interspeech.2021-698}
+}
 ```  
 ```  
 @article{gong2021psla,  
