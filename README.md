@@ -35,11 +35,13 @@ Please cite our paper(s) if you find this repository useful. The first paper pro
 }
 ```  
 ```  
-@article{gong2021psla,  
- title={PSLA: Improving Audio Tagging with Pretraining, Sampling, Labeling, and Aggregation}, 
- author={Gong, Yuan and Chung, Yu-An and Glass, James}, 
- journal={arXiv preprint arXiv:2102.01243}, 
- year={2021}}  
+@ARTICLE{gong_psla, 
+    author={Gong, Yuan and Chung, Yu-An and Glass, James},  
+    journal={IEEE/ACM Transactions on Audio, Speech, and Language Processing},   
+    title={PSLA: Improving Audio Tagging with Pretraining, Sampling, Labeling, and Aggregation},   
+    year={2021}, 
+    doi={10.1109/TASLP.2021.3120633}
+}
 ```  
   
 ## Getting Started  
