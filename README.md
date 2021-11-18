@@ -1,5 +1,6 @@
 
 # AST: Audio Spectrogram Transformer  
+ - [News](#News)
  - [Introduction](#Introduction)
  - [Citing](#Citing)  
  - [Getting Started](#Getting-Started)
@@ -9,6 +10,10 @@
  - [Pretrained Models](#Pretrained-Models)
  - [Use Pretrained Model For Downstream Tasks](#Use-Pretrained-Model-For-Downstream-Tasks)
  - [Contact](#Contact)
+
+## News
+
+Nov, 2021: The PSLA training pipeline and baseline efficientnet model code is released [here](https://github.com/YuanGongND/psla).
 
 ## Introduction  
 
