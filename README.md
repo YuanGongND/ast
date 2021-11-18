@@ -13,7 +13,7 @@
 
 ## News
 
-Nov, 2021: The [PSLA training pipeline](https://arxiv.org/abs/2102.01243) and baseline efficientnet model code is released [here](https://github.com/YuanGongND/psla). It is a strong audio classification training pipeline that can be used for most deep learning models. Also, it has a one-click FSD50K recipe that achieves SOTA 0.567 mAP.
+Nov, 2021: The [PSLA training pipeline](https://arxiv.org/abs/2102.01243) used to train AST and baseline efficientnet model code is released [here](https://github.com/YuanGongND/psla). It is a strong audio classification training pipeline that can be used for most deep learning models. Also, it has a one-click FSD50K recipe that achieves SOTA 0.567 mAP.
 
 ## Introduction  
 
