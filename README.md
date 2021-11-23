@@ -158,7 +158,7 @@ In order to reproduce ensembe results of `0.475 mAP` and `0.485 mAP`, please tra
 We use `16kHz` for our experiments. Note that you might get a slightly different result with us due to the YouTube videos are being removed with the time and your downloaded version might be different with us. We provide our evaluation audio ids in `ast/egs/audioset/data/sanity_check/our_as_eval_id.csv`. And please note that in order to compre with the PSLA paper, for the **balanced training set** experiments (with results of `0.347 mAP` and `0.378 mAP`), we use the enhanced label set (i.e., a label set that is modified by an algorithm, please see the PSLA paper for detail). So if you train with the original label set for the balanced training set, you will get a slightly worse result. However, we do not use enhanced label set for **full AudioSet experiments**, i.e., for the `0.459 mAP` (single) and `0.485 mAP` (ensemble) results, we use exactly same data and label with the official release, so you should be able to reproduce that. 
 
 ## Pretrained Models
-We provide full AudioSet pretrained models.
+We provide full AudioSet pretrained models and Speechcommands-V2-35 pretrained model.
 1. [Full AudioSet, 10 tstride, 10 fstride, with Weight Averaging (0.459 mAP)](https://www.dropbox.com/s/ca0b1v2nlxzyeb4/audioset_10_10_0.4593.pth?dl=1)
 2. [Full AudioSet, 10 tstride, 10 fstride, without Weight Averaging, Model 1 (0.450 mAP)](https://www.dropbox.com/s/1tv0hovue1bxupk/audioset_10_10_0.4495.pth?dl=1)
 3. [Full AudioSet, 10 tstride, 10 fstride, without Weight Averaging, Model 2  (0.448 mAP)](https://www.dropbox.com/s/6u5sikl4b9wo4u5/audioset_10_10_0.4483.pth?dl=1)
@@ -166,6 +166,8 @@ We provide full AudioSet pretrained models.
 5. [Full AudioSet, 12 tstride, 12 fstride, without Weight Averaging, Model (0.447 mAP)](https://www.dropbox.com/s/snfhx3tizr4nuc8/audioset_12_12_0.4467.pth?dl=1)
 6. [Full AudioSet, 14 tstride, 14 fstride, without Weight Averaging, Model (0.443 mAP)](https://www.dropbox.com/s/z18s6pemtnxm4k7/audioset_14_14_0.4431.pth?dl=1)
 7. [Full AudioSet, 16 tstride, 16 fstride, without Weight Averaging, Model (0.442 mAP)](https://www.dropbox.com/s/mdsa4t1xmcimia6/audioset_16_16_0.4422.pth?dl=1)
+
+8. [Speechcommands V2-35, 10 tstride, 10 fstride, without Weight Averaging, Model (98.12% accuracy on evaluation set)](https://www.dropbox.com/s/q0tbqpwv44pquwy/speechcommands_10_10_0.9812.pth?dl=1)
 
 If you want to finetune AudioSet-pretrained AST model on your task, you can simply set the `audioset_pretrain=True` when you create the AST model, it will automatically download model 1 (`0.459 mAP`). In our ESC-50 recipe, AudioSet pretraining is used.
 
