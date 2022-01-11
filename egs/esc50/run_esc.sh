@@ -40,7 +40,7 @@ if [ -d $base_exp_dir ]; then
   echo 'exp exist'
   exit
 fi
-mkdir -p $exp_dir
+mkdir -p $base_exp_dir
 
 for((fold=1;fold<=5;fold++));
 do
