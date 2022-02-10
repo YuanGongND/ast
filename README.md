@@ -13,6 +13,8 @@
 
 ## News
 
+Feb, 2022: The [Self-Supervised AST (SSAST)](https://arxiv.org/abs/2110.09784) code is released [here](https://github.com/YuanGongND/ssast). SSAST use self-supervised pretraining instead of supervised ImageNet pretraining, so it supports arbitrary patch shape and size (e.g., a temperal frame and a square patch) with a good performance.
+
 Nov, 2021: The [PSLA training pipeline](https://arxiv.org/abs/2102.01243) used to train AST and baseline efficientnet model code is released [here](https://github.com/YuanGongND/psla). It is a strong audio classification training pipeline that can be used for most deep learning models. Also, it has a one-click FSD50K recipe that achieves SOTA 0.567 mAP.
 
 ## Introduction  
