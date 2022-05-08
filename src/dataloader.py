@@ -187,10 +187,14 @@ class AudiosetDataset(Dataset):
         freqm = torchaudio.transforms.FrequencyMasking(self.freqm)
         timem = torchaudio.transforms.TimeMasking(self.timem)
         fbank = torch.transpose(fbank, 0, 1)
+        # this is just to satisfy new torchaudio version, which only accept [1, freq, time]
+        fbank = fbank.unsqueeze(0)
         if self.freqm != 0:
             fbank = freqm(fbank)
         if self.timem != 0:
             fbank = timem(fbank)
+        # squeeze it back, it is just a trick to satisfy new torchaudio version
+        fbank = fbank.squeeze(0)
         fbank = torch.transpose(fbank, 0, 1)
 
         # normalize the input for both training and test
