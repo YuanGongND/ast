@@ -13,6 +13,8 @@
 
 ## News
 
+May, 2022: It was found that newer `torchaudio` package has different behavior with older ones in time and frequency masking and will cause a bug. Please stick to the version in `requirement.txt`.
+
 March, 2022: We released a new preprint [*CMKD: CNN/Transformer-Based Cross-Model Knowledge Distillation for Audio Classification*](https://arxiv.org/abs/2203.06760), where we proposed a knowledge distillation based method to further improve the AST model performance without changing its architecture.
 
 Feb, 2022: The [Self-Supervised AST (SSAST)](https://arxiv.org/abs/2110.09784) code is released [[**here**]](https://github.com/YuanGongND/ssast). SSAST use self-supervised pretraining instead of supervised ImageNet pretraining, so it supports arbitrary patch shape and size (e.g., a temperal frame and a square patch) with a good performance.
