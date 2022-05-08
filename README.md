@@ -13,7 +13,7 @@
 
 ## News
 
-May, 2022: It was found that newer `torchaudio` package has different behavior with older ones in time and frequency masking and will cause a bug. We find a workaround and fixed it.
+May, 2022: It was found that newer `torchaudio` package has different behavior with older ones in SpecAugment and will cause a [bug](https://github.com/YuanGongND/ast/issues/58). We find a workaround and fixed it. If you are interested, see [here](https://colab.research.google.com/github/YuanGongND/ast/blob/master/colab/torchaudio_SpecMasking_1_1.ipynb).
 
 March, 2022: We released a new preprint [*CMKD: CNN/Transformer-Based Cross-Model Knowledge Distillation for Audio Classification*](https://arxiv.org/abs/2203.06760), where we proposed a knowledge distillation based method to further improve the AST model performance without changing its architecture.
 
