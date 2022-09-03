@@ -13,7 +13,7 @@
 
 ## News
 
-August, 2022: We add an one-click, self-contrained Google Colab script for (pretrained) AST inference. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/Audio_Spectrogram_Transformer_Inference_Demo.ipynb) by one click.
+August, 2022: We add an one-click, self-contained Google Colab script for (pretrained) AST inference. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/Audio_Spectrogram_Transformer_Inference_Demo.ipynb) by one click.
 
 May, 2022: It was found that newer `torchaudio` package has different behavior with older ones in SpecAugment and will cause a [bug](https://github.com/YuanGongND/ast/issues/58). We find a workaround and fixed it. If you are interested, see [here](https://colab.research.google.com/github/YuanGongND/ast/blob/master/colab/torchaudio_SpecMasking_1_1.ipynb).
 
@@ -35,7 +35,7 @@ Please have a try! AST can be used with a few lines of code, and we also provide
 
 The AST model file is in `src/models/ast_models.py`, the recipes are in `egs/[audioset,esc50,speechcommands]/run.sh`, when you run `run.sh`, it will call `/src/run.py`, which will then call `/src/dataloader.py` and `/src/traintest.py`, which will then call `/src/models/ast_models.py`.
 
-We have an one-click, self-contrained Google Colab script for (pretrained) AST inference. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/Audio_Spectrogram_Transformer_Inference_Demo.ipynb) by one click.
+We have an one-click, self-contained Google Colab script for (pretrained) AST inference. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/Audio_Spectrogram_Transformer_Inference_Demo.ipynb) by one click.
 
 ## Citing  
 Please cite our paper(s) if you find this repository useful. The first paper proposes the Audio Spectrogram Transformer while the second paper describes the training pipeline that we applied on AST to achieve the new state-of-the-art on AudioSet.   
@@ -117,7 +117,7 @@ test_output = ast_mdl(test_input)
 print(test_output.shape)  
 ```  
 
-We have an one-click, self-contrained Google Colab script for (pretrained) AST inference. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/Audio_Spectrogram_Transformer_Inference_Demo.ipynb) by one click.
+We have an one-click, self-contained Google Colab script for (pretrained) AST inference. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/Audio_Spectrogram_Transformer_Inference_Demo.ipynb) by one click.
 
 ## ESC-50 Recipe  
 The ESC-50 recipe is in `ast/egs/esc50/run_esc.sh`, the script will automatically download the ESC-50 dataset and resample it to 16kHz, then run standard 5-cross validation and report the result.
