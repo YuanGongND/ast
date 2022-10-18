@@ -12,8 +12,7 @@
  - [Contact](#Contact)
 
 ## News
-
-August, 2022: We add an one-click, self-contained Google Colab script for (pretrained) AST inference. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/Audio_Spectrogram_Transformer_Inference_Demo.ipynb) by one click (no GPU needed). 
+October, 2022: We add an one-click, self-contained Google Colab script for (pretrained) AST inference with attention visualization. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/colab/AST_Inference_Demo.ipynb) by one click (no GPU needed). 
 
 May, 2022: It was found that newer `torchaudio` package has different behavior with older ones in SpecAugment and will cause a [bug](https://github.com/YuanGongND/ast/issues/58). We find a workaround and fixed it. If you are interested, see [here](https://colab.research.google.com/github/YuanGongND/ast/blob/master/colab/torchaudio_SpecMasking_1_1.ipynb).
 
@@ -117,7 +116,7 @@ test_output = ast_mdl(test_input)
 print(test_output.shape)  
 ```  
 
-We have an one-click, self-contained Google Colab script for (pretrained) AST inference. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/Audio_Spectrogram_Transformer_Inference_Demo.ipynb) by one click (no GPU needed).
+We have an one-click, self-contained Google Colab script for (pretrained) AST inference and attention visualization. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/colab/AST_Inference_Demo.ipynb) by one click (no GPU needed).
 
 ## ESC-50 Recipe  
 The ESC-50 recipe is in `ast/egs/esc50/run_esc.sh`, the script will automatically download the ESC-50 dataset and resample it to 16kHz, then run standard 5-cross validation and report the result.
