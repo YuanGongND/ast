@@ -8,5 +8,6 @@ sklearn==0.0
 timm==0.4.5
 torch==1.8.1
 torchaudio==0.8.1
+torchvision==0.10.0
 wget==3.2
 zipp==3.4.1
