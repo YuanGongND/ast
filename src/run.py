@@ -29,7 +29,7 @@ parser.add_argument("--data-eval", type=str, default='', help="evaluation data j
 parser.add_argument("--label-csv", type=str, default='', help="csv with class labels")
 parser.add_argument("--n_class", type=int, default=527, help="number of classes")
 parser.add_argument("--model", type=str, default='ast', help="the model used")
-parser.add_argument("--dataset", type=str, default="audioset", help="the dataset used", choices=["audioset", "esc50", "speechcommands"])
+parser.add_argument("--dataset", type=str, default="audioset", help="the dataset used")
 
 parser.add_argument("--exp-dir", type=str, default="", help="directory to dump experiments")
 parser.add_argument('--lr', '--learning-rate', default=0.001, type=float, metavar='LR', help='initial learning rate')
@@ -53,20 +53,64 @@ parser.add_argument("--tstride", type=int, default=10, help="soft split time str
 parser.add_argument('--imagenet_pretrain', help='if use ImageNet pretrained audio spectrogram transformer model', type=ast.literal_eval, default='True')
 parser.add_argument('--audioset_pretrain', help='if use ImageNet and audioset pretrained audio spectrogram transformer model', type=ast.literal_eval, default='False')
 
+parser.add_argument("--dataset_mean", type=float, default=-4.2677393, help="the dataset spectrogram mean")
+parser.add_argument("--dataset_std", type=float, default=4.5689974, help="the dataset spectrogram std")
+parser.add_argument("--audio_length", type=int, default=1024, help="the dataset spectrogram std")
+parser.add_argument('--noise', help='if augment noise', type=ast.literal_eval, default='False')
+
+parser.add_argument("--metrics", type=str, default=None, help="evaluation metrics", choices=["acc", "mAP"])
+parser.add_argument("--loss", type=str, default=None, help="loss function", choices=["BCE", "CE"])
+parser.add_argument('--warmup', help='if warmup the learning rate', type=ast.literal_eval, default='False')
+parser.add_argument("--lrscheduler_start", type=int, default=2, help="which epoch to start reducing the learning rate")
+parser.add_argument("--lrscheduler_step", type=int, default=1, help="how many epochs as step to reduce the learning rate")
+parser.add_argument("--lrscheduler_decay", type=float, default=0.5, help="the learning rate decay rate at each step")
+
+parser.add_argument('--wa', help='if weight averaging', type=ast.literal_eval, default='False')
+parser.add_argument('--wa_start', type=int, default=1, help="which epoch to start weight averaging the checkpoint model")
+parser.add_argument('--wa_end', type=int, default=5, help="which epoch to end weight averaging the checkpoint model")
+
+# if args.dataset == 'audioset':
+#     if len(train_loader.dataset) > 2e5:
+#         print('scheduler for full audioset is used')
+#         scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [2,3,4,5], gamma=0.5, last_epoch=-1)
+#     else:
+#         print('scheduler for balanced audioset is used')
+#         scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [10, 15, 20, 25], gamma=0.5, last_epoch=-1)
+#     main_metrics = 'mAP'
+#     loss_fn = nn.BCEWithLogitsLoss()
+#     warmup = True
+# elif args.dataset == 'esc50':
+#     print('scheduler for esc-50 is used')
+#     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, list(range(5,26)), gamma=0.85)
+#     main_metrics = 'acc'
+#     loss_fn = nn.CrossEntropyLoss()
+#     warmup = False
+# elif args.dataset == 'speechcommands':
+#     print('scheduler for speech commands is used')
+#     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, list(range(5,26)), gamma=0.85)
+#     main_metrics = 'acc'
+#     loss_fn = nn.BCEWithLogitsLoss()
+#     warmup = False
+# else:
+#     raise ValueError('unknown dataset, dataset should be in [audioset, speechcommands, esc50]')
+#
+
 args = parser.parse_args()
 
 # transformer based model
 if args.model == 'ast':
     print('now train a audio spectrogram transformer model')
-    # dataset spectrogram mean and std, used to normalize the input
-    norm_stats = {'audioset':[-4.2677393, 4.5689974], 'esc50':[-6.6268077, 5.358466], 'speechcommands':[-6.845978, 5.5654526]}
-    target_length = {'audioset':1024, 'esc50':512, 'speechcommands':128}
-    # if add noise for data augmentation, only use for speech commands
-    noise = {'audioset': False, 'esc50': False, 'speechcommands':True}
 
-    audio_conf = {'num_mel_bins': 128, 'target_length': target_length[args.dataset], 'freqm': args.freqm, 'timem': args.timem, 'mixup': args.mixup, 'dataset': args.dataset, 'mode':'train', 'mean':norm_stats[args.dataset][0], 'std':norm_stats[args.dataset][1],
-                  'noise':noise[args.dataset]}
-    val_audio_conf = {'num_mel_bins': 128, 'target_length': target_length[args.dataset], 'freqm': 0, 'timem': 0, 'mixup': 0, 'dataset': args.dataset, 'mode':'evaluation', 'mean':norm_stats[args.dataset][0], 'std':norm_stats[args.dataset][1], 'noise':False}
+    # 11/30/22: I decouple the dataset and the following hyper-parameters to make it easier to adapt to new datasets
+    # dataset spectrogram mean and std, used to normalize the input
+    # norm_stats = {'audioset':[-4.2677393, 4.5689974], 'esc50':[-6.6268077, 5.358466], 'speechcommands':[-6.845978, 5.5654526]}
+    # target_length = {'audioset':1024, 'esc50':512, 'speechcommands':128}
+    # # if add noise for data augmentation, only use for speech commands
+    # noise = {'audioset': False, 'esc50': False, 'speechcommands':True}
+
+    audio_conf = {'num_mel_bins': 128, 'target_length': args.audio_length, 'freqm': args.freqm, 'timem': args.timem, 'mixup': args.mixup, 'dataset': args.dataset, 'mode':'train', 'mean':args.dataset_mean, 'std':args.dataset_std,
+                  'noise':args.noise}
+    val_audio_conf = {'num_mel_bins': 128, 'target_length': args.audio_length, 'freqm': 0, 'timem': 0, 'mixup': 0, 'dataset': args.dataset, 'mode':'evaluation', 'mean':args.dataset_mean, 'std':args.dataset_std, 'noise':False}
 
     if args.bal == 'bal':
         print('balanced sampler is being used')
@@ -87,7 +131,7 @@ if args.model == 'ast':
         batch_size=args.batch_size*2, shuffle=False, num_workers=args.num_workers, pin_memory=True)
 
     audio_model = models.ASTModel(label_dim=args.n_class, fstride=args.fstride, tstride=args.tstride, input_fdim=128,
-                                  input_tdim=target_length[args.dataset], imagenet_pretrain=args.imagenet_pretrain,
+                                  input_tdim=args.audio_length, imagenet_pretrain=args.imagenet_pretrain,
                                   audioset_pretrain=args.audioset_pretrain, model_size='base384')
 
 print("\nCreating experiment directory: %s" % args.exp_dir)

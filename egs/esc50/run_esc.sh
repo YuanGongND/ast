@@ -32,6 +32,19 @@ epoch=25
 batch_size=48
 fstride=10
 tstride=10
+
+dataset_mean=-6.6268077
+dataset_std=5.358466
+audio_length=512
+noise=False
+
+metrics=acc
+loss=CE
+warmup=False
+lrscheduler_start=5
+lrscheduler_step=1
+lrscheduler_decay=0.85
+
 base_exp_dir=./exp/test-${dataset}-f$fstride-t$tstride-imp$imagenetpretrain-asp$audiosetpretrain-b$batch_size-lr${lr}
 
 python ./prep_esc50.py
@@ -56,7 +69,9 @@ do
   --label-csv ./data/esc_class_labels_indices.csv --n_class 50 \
   --lr $lr --n-epochs ${epoch} --batch-size $batch_size --save_model False \
   --freqm $freqm --timem $timem --mixup ${mixup} --bal ${bal} \
-  --tstride $tstride --fstride $fstride --imagenet_pretrain $imagenetpretrain --audioset_pretrain $audiosetpretrain
+  --tstride $tstride --fstride $fstride --imagenet_pretrain $imagenetpretrain --audioset_pretrain $audiosetpretrain \
+  --metrics ${metrics} --loss ${loss} --warmup ${warmup} --lrscheduler_start ${lrscheduler_start} --lrscheduler_step ${lrscheduler_step} --lrscheduler_decay ${lrscheduler_decay} \
+  --dataset_mean ${dataset_mean} --dataset_std ${dataset_std} --audio_length ${audio_length} --noise ${noise}
 done
 
 python ./get_esc_result.py --exp_path ${base_exp_dir}

@@ -12,6 +12,8 @@
  - [Contact](#Contact)
 
 ## News
+November, 2022: We decoupe `dataset` and hyper-parameters by moving hyper-parameters from `src/run.py` and `src/traintest.py` to `egs/{audioset,esc50,speechcommands}/run.sh`, so that it is easier to adapt the scripts to new datasets. This might cause a bug, please report if you have any issue running any recipe.
+
 October, 2022: We add an one-click, self-contained Google Colab script for (pretrained) AST inference with attention visualization. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/colab/AST_Inference_Demo.ipynb) by one click (no GPU needed). 
 
 May, 2022: It was found that newer `torchaudio` package has different behavior with older ones in SpecAugment and will cause a [bug](https://github.com/YuanGongND/ast/issues/58). We find a workaround and fixed it. If you are interested, see [here](https://colab.research.google.com/github/YuanGongND/ast/blob/master/colab/torchaudio_SpecMasking_1_1.ipynb).
@@ -197,11 +199,14 @@ Please note that AST needs smaller learning rate (we use 10 times smaller learni
 
 If you want to use our training pipeline, you would need to modify below for your new dataset.
 1. You need to create a json file, and a label index for your dataset, see ``ast/egs/audioset/data/`` for an example.
-2. In ``/your_dataset/run.sh``, you need to specify the data json file path, the SpecAug parameters (``freqm`` and ``timem``, we recommend to mask 48 frequency bins out of 128, and 20% of your time frames), the mixup rate (i.e., how many samples are mixup samples), batch size, initial learning rate, etc. Please see ``ast/egs/[audioset,esc50,speechcommands]/run.sh]`` for samples.
-3. In ``ast/src/run.py``, line 60-65, you need to add the normalization stats, the input frame length, and if noise augmentation is needed for your dataset. Also take a look at line 101-127 if you have a seperate validation set. For normalization stats, you need to compute the mean and std of your dataset (check ``ast/src/get_norm_stats.py``) or you can try using our AudioSet normalization ``input_spec = (input_spec + 4.26) / (4.57 * 2)``.
-4. In ``ast/src/traintest.`` line 55-82, you need to specify the learning rate scheduler, metrics, warmup setting and the optimizer for your task.
+2. In ``/your_dataset/run.sh``, you need to specify the data json file path. You need to set `dataset_mean` and `dataset_std`, if don't know, you can use our AudioSet stats (mean=-4.27, std=4.57); You need to set `audio_length`, which should be the number of frames (e.g., with a 10ms hop, 10-second audio=1000 frames); You need to set the `metrics` in [`acc`,`mAP`] and `loss` in [`CE`,`BCE`]; You need to set the inital learning rate `lr` and learning rate scheduler `lrscheduler_{start,step,decay}`;
+You also need to set the SpecAug parameters (``freqm`` and ``timem``, we recommend to mask 48 frequency bins out of 128, and 20% of your time frames), the mixup rate (i.e., how many samples are mixup samples), batch size, etc. While it seems a lot, it is easy if you start with one of our recipe: ``ast/egs/[audioset,esc50,speechcommands]/run.sh]``.
 
-To summarize, to use our training pipeline, you need to creat data files and modify the above three python scripts. You can refer to our ESC-50 and Speechcommands recipes.
+[comment]: <> (3. In ``ast/src/run.py``, line 60-65, you need to add the normalization stats, the input frame length, and if noise augmentation is needed for your dataset. Also take a look at line 101-127 if you have a seperate validation set. For normalization stats, you need to compute the mean and std of your dataset &#40;check ``ast/src/get_norm_stats.py``&#41; or you can try using our AudioSet normalization ``input_spec = &#40;input_spec + 4.26&#41; / &#40;4.57 * 2&#41;``.)
+
+[comment]: <> (4. In ``ast/src/traintest.`` line 55-82, you need to specify the learning rate scheduler, metrics, warmup setting and the optimizer for your task.)
+
+To summarize, to use our training pipeline, you need to creat data files and modify the shell script. You can refer to our ESC-50 and Speechcommands recipes.
 
 Also, please note that we use `16kHz` audios for the pretrained model, so if you want to use the pretrained model, please prepare your data in `16kHz`.
 
