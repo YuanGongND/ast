@@ -19,7 +19,7 @@ export TORCH_HOME=../../pretrained_models
 model=ast
 dataset=audioset
 # full or balanced for audioset
-set=balanced
+set=full
 imagenetpretrain=True
 if [ $set == balanced ]
 then
