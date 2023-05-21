@@ -12,6 +12,8 @@
  - [Contact](#Contact)
 
 ## News
+May, 2023: We have released demo for our audio large language model LTU (listen, think, and understand) that can do zero-shot audio classification and advanced reasoning. Try the online interactive demo **[[here]](https://github.com/YuanGongND/ltu)**.
+
 November, 2022: We decoupe `dataset` and hyper-parameters by moving hyper-parameters from `src/run.py` and `src/traintest.py` to `egs/{audioset,esc50,speechcommands}/run.sh`, so that it is easier to adapt the scripts to new datasets. This might cause a bug, please report if you have any issue running any recipe.
 
 October, 2022: We add an one-click, self-contained Google Colab script for (pretrained) AST inference with attention visualization. Please test the model with your own audio at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YuanGongND/ast/blob/master/colab/AST_Inference_Demo.ipynb) by one click (no GPU needed). 
